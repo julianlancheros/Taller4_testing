@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Reseñas de Equipos</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #2d3748; }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h1 { color: #2b6cb0; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; margin-top: 0; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #4a5568; }
+        input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 15px; }
+        textarea { height: 100px; resize: vertical; }
+        button { background: #2b6cb0; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #2c5282; }
+        .alert { background: #c6f6d5; color: #22543d; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px; font-weight: bold; border: 1px solid #c6f6d5; }
+        .card { background: #f7fafc; border-left: 6px solid #2b6cb0; padding: 20px; margin-top: 15px; border-radius: 6px; border: 1px solid #e2e8f0; border-left-width: 6px; }
+        .card h3 { margin: 0 0 10px 0; color: #2b6cb0; }
+        .meta { font-size: 13px; color: #718096; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Registro de Equipos Tecnológicos</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div id="banner_exito" class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/resenas" method="POST">
+            <label for="equipo">Nombre del Dispositivo:</label>
+            <input type="text" id="equipo" name="equipo" required placeholder="Ej: MacBook Pro M3 Max">
+
+            <label for="categoria">Categoría del Hardware:</label>
+            <select id="categoria" name="categoria">
+                <option value="Laptops">Laptops / Computadores</option>
+                <option value="Móviles">Smartphones / Tablets</option>
+                <option value="Componentes">Componentes / Periféricos</option>
+            </select>
+
+            <label for="calificacion">Calificación Técnica (1 a 5):</label>
+            <input type="number" id="calificacion" name="calificacion" min="1" max="5" value="5">
+
+            <label for="comentario">Análisis de Rendimiento (Comentario):</label>
+            <textarea id="comentario" name="comentario" required placeholder="Escribe los detalles de las pruebas físicas del equipo..."></textarea>
+
+            <button type="submit" id="btn_guardar">Guardar Reseña en la Nube</button>
+        </form>
+
+        <h2 style="color: #2b6cb0; margin-top: 40px; border-top: 2px solid #edf2f7; padding-top: 20px;">📖 Módulo de Consulta: Historial en PostgreSQL</h2>
+        <div id="seccion_consulta">
+            {% if not resenas %}
+                <p style="color: #a0aec0; text-align: center;">No hay registros almacenados en la base de datos distribuida.</p>
+            {% else %}
+                {% for r in resenas %}
+                    <div class="card">
+                        <h3>🔍 Registro ID #{{ r.id }} - {{ r.equipo }}</h3>
+                        <div class="meta">Clasificación: <strong>{{ r.categoria }}</strong> | Puntuación de Calidad: <strong>{{ r.calificacion }}/5</strong></div>
+                        <p><strong>Análisis Evaluativo:</strong><br>{{ r.comentario }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
